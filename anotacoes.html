@@ -86,4 +86,61 @@
         este para o código ter acesso a action de adicionar que configuramos no reducer. Este "adicionar", colocamos no lugar do console.log temporário, com a prop game dentro da função.
       D - Mas para uma action funcionar, ele deve ser chamada por um dispatch. Então, o "adicionar" dentro de "S.BtnComprar" deve estar da seguinte forma:
         <S.BtnComprar onClick={() => dispatch(adicionar(game))} type="button">
+
+  7 - Agora vamos usar o redux toolkit para gerenciar os dados dos jogos, que no memomento está sendo feita por um link fetch.
+      A - Comece criando uma pasta em src com o nome de "services", nela crie um arquivo com o nome de "api.ts".
+      B - Dentro deste arquivo, vamos fazer a importação do createapi e fetchBaseQuery, dois recursos do redux toolkit. Então criaremos a const da api.
+        Nela, dentro da createApi vamos usar a prop baseQuery para receber o  fetchBaseQuery. Nele como objeto teremos a prop baseUrl, que ira receber o endereço dos dados.
+        Mas na baseUrl vamos usar o link somente até "http://localhost:4000".
+      c - Agora as requisições, ou "endpoints". Ele vai receber um builder (construtor), vai ser uma arrow function para um objeto.
+        Neste objeto vamos usar um get, o "getJogos". Ele vai receber um builder direcionado pelo query ao tipo "Game" em um array, seguido de um ", void", Já que não temos nenhum outro parametro além da requisição.
+        Devemos também fazer a importação da tipagem Game no arquivo. E dentro do "builder.query<Game[]...", teremos mais um query direcionando para o elemento final da url,
+        o "'produtos'".
+      D - Para finalizar, temos de exportar esta api. O redux toolkit já cria automaticamente um hook para o código que criamos, o "useGetJogosQuery", ele deve ser exportado também.
+        A api deve ser exportada como padrão.
+        No final, seu código do api.ts deve ficar assim:
+        import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+        import { Game } from '../App'
+
+        const api = createApi({
+          baseQuery: fetchBaseQuery({
+            baseUrl: 'http://localhost:4000'
+          }),
+          endpoints: (builder) => ({
+            getJogos: builder.query<Game[], void>({
+              query: () => 'produtos'
+            })
+          })
+        })
+
+        export const { useGetJogosQuery } = api
+        export default api
+
+  8 - De volta ao App.tsx, nele agora podemos remover todo o código referente a const "const [games, setGames]...", que está dentro da function app.
+      Vamos agora fazer a requisição dos dados dos jogos dentro do container de produtos. Vamos tirar o "jogos={games}" do elemento produtos.
+      A - Em produtos.tsx, podemos remover os props antes da const e as dentro da função também.
+      B - E então vamos configurar o return dos produtos com uma const, nela vamos usar de forma desestruturada dois recursos do toolkit.
+        O Data e o isLoading, o data será renomeado como jogos (data: jogos). Dentro do container devemos colocar a prop jogos como undefined (com ?).
+        E então como "if", fazemos o isLoading retornar a mensagem "carregando..." dentro de um h2.
+
+  9 - Temos de adicionar a api criada dentro do "index.ts" na pasta reducer. deve-se importar a api no arquivo, e depois configurar ela no reducer
+      que está dentro de export const.
+      A - Utilizando o reducePath, nós damos o caminho dentro do reduce na api, para o reduce do index.ts.
+      B - E temos de configurar o Middleware, ele tem a função de gerenciar e tentar evitar erros na comunicação entre o dispatch e a store.
+        Ele vai fazer a concatenação da api em services com o store.
+        Finalizando o resultado deve estar assim:
+        import { configureStore } from '@reduxjs/toolkit'
+        import carrinhoReducer from './reducers/carrinho'
+        import api from '../services/api'
+
+        export const store = configureStore({
+          reducer: {
+            carrinho: carrinhoReducer,
+            [api.reducerPath]: api.reducer
+          },
+          middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware().concat(api.middleware)
+        })
+
+        export type RootReducer = ReturnType<typeof store.getState>
 -->
