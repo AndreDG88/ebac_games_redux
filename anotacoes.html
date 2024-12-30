@@ -76,4 +76,14 @@
       }
       Assim você pode vêr como o projeto esta em andamento no navegador
 
+  6 - Agora que vimos que está tudo certo com o projeto até aqui, pode remover essa função teste do itensNoCarrinho, e a propriedade dele no elemento produtos também.
+      A - No arquivo Produtos.tsx (src/containers/Produtos.tsx), remova em S.Produtos o "aoComprar={adicionarAoCarrinho}", e remova o adicionarAoCarrinho da extração de
+        props também. E na Tipagem das props remover "adicionarAoCarrinho: (jogo: Game) => void".
+      B - Vamos alterar agora o index do produto (src/Produto/index.tsx), na Tipagem das props remover "aoComprar: (jogo: Game) => void".
+        remova o aoComprar da extração de props também. E por enquanto no "S.BtnComprar", Substituir o aoComprar por um console.log.
+      c - Agora vamos criar o primeiro dispatch, ainda no index de produto, na const Produto, adicione uma nova const:
+        "const dispatch = useDispatch()". Adicione as importações o "import { useDispatch } from 'react-redux'" e também o "import { adicionar } from '../../store/reducers/carrinho'",
+        este para o código ter acesso a action de adicionar que configuramos no reducer. Este "adicionar", colocamos no lugar do console.log temporário, com a prop game dentro da função.
+      D - Mas para uma action funcionar, ele deve ser chamada por um dispatch. Então, o "adicionar" dentro de "S.BtnComprar" deve estar da seguinte forma:
+        <S.BtnComprar onClick={() => dispatch(adicionar(game))} type="button">
 -->
