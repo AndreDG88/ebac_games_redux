@@ -47,9 +47,33 @@
     import { configureStore } from '@reduxjs/toolkit'
     import carrinhoReducer from './reducers/carrinho'
 
-    const store = configureStore({
+    export const store = configureStore({
       reducer: {
         carrinho: carrinhoReducer
       }
     })
+
+  4- Agora no Arquivo "App.tsx" temos que começar a fazer as modificações para que ele aceite a nova estrutura que estamos construindo.
+      Podemos remover em function a linha de função antiga do carrinho, pois já configuramos seu reducer.
+    A - Agora em Return, seu código está encapsulado em um fragmento vazio, vamos mudar isso trocando para uma tag de importação chamada de "provider".
+      Ele será o container de todo o app, ele dará acesso ao estado. Dentro da tag do provider adicione "store={store}".
+    b - Faça a importação do Store no arquivo do App.tsx, adicione nas importações "import { store } from './store'"
+
+  5- No index.tsx do Header dentro de componets, temos de remover o "itensNoCarrinho: Game[]" que está nas props. Na realidade, pode-se remover toda a props.
+      Também pode remover o "{ itensNoCarrinho }: Props" da const Header, e a importação "Game". Não estão sendo utilizados.
+    A - Precisamos configurar o TypeScript para o reducer poder funcionar, então no index.ts em reducers, vamos adicionar "export type RootReducer = ReturnType<typeof store.getState>".
+      Isto é uma inferência de tipo, com isso o próprio reducer vai ver o valor que será retornado de getState e ira selecionar o tipo apropriado.
+    B - E agora podemos importar este RootReducer como "import { RootReducer } from '../../store'". E também adicionar ele na const Header.
+      Colocando como a const: "const itens = useSelector((state: RootReducer) => state.carrinho.itens)". O useSelector também tem que estar importado,
+      como "import { useSelector } from 'react-redux'". E por convenção, as importações do node, npm devem vir primeiro na lista.
+    c - Agora todas as referências a "itensNoCarrinho" devem ser trocadas por "itens" da nova const.
+    D - Também em App.tsx, devemos remover a propriedade "itensNoCarrinho={carrinho}", do elemento Header.
+
+  OBS: Para contornar o erro que esta acontecendo momentâneamente por conta do itensNoCarrinho, atribua a ele uma função fake.
+      Como:
+      function adicionarAoCarrinho() {
+        console.log('teste')
+      }
+      Assim você pode vêr como o projeto esta em andamento no navegador
+
 -->
